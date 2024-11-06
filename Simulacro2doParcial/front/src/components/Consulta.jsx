@@ -4,6 +4,14 @@ import { Table, Button} from 'react-bootstrap'
 //le paso por parametros los props q le pase a la llamada del componente en registro
 const Consulta = ({ reservas, onVolver }) => {
     console.log(reservas);
+
+    const onModificar = (reserva) => {
+        
+    }
+
+    const onBorrar = (reserva) => {
+
+    }
     
     const tbody = reservas.map(reserva =>
         <tr key={reserva.Id}>
@@ -12,6 +20,10 @@ const Consulta = ({ reservas, onVolver }) => {
             <td>{reserva.FechaSalida}</td>
             <td>{reserva.TipoEstadia}</td>
             <td>{reserva.Huespedes}</td>
+            <td>
+                <button onClick={() => onModificar(reserva)}>Modificar</button>
+                <button onClick={() => onBorrar(reserva)}>Eliminar</button>
+            </td>
         </tr>
     )
 
@@ -27,6 +39,7 @@ const Consulta = ({ reservas, onVolver }) => {
                         <th>Fecha salida</th>
                         <th>Tipo de estadia</th>
                         <th>Huespedes</th>
+                        <th>Modificar/Borrar</th>
                     </tr>
                 </thead>
                 <tbody>{tbody}</tbody>

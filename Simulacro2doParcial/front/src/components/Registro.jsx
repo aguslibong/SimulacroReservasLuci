@@ -10,7 +10,11 @@ export default function Registro() {
     const [reservas, setReservas] = useState([])
     const [action, setAction] = useState('C')
     const { register, handleSubmit, formState: { errors } } = useForm()
-    const navigate = useNavigate()
+    
+
+    const onDelete = async(reserva) => {
+        reservasServices.deleteReserva
+    }
 
     const onSubmit = async (data) => {
         reservasServices.saveReserva(data)
