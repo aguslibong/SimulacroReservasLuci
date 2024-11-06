@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import reservasServices from '../services/reservas.services'
-import { useNavigate } from 'react-router-dom'
 import Consulta from './Consulta.jsx'
 import { useForm } from 'react-hook-form';
 
@@ -10,18 +9,42 @@ export default function Registro() {
     const [reservas, setReservas] = useState([])
     const [action, setAction] = useState('C')
     const { register, handleSubmit, formState: { errors } } = useForm()
-    
+    const [reservaSelecc, setReservaSelecc] = useState(null)
+
+    const onModificar = async(reserva) => {
+        setReservaSelecc(reserva)
+        setAction('R')
+    }
 
     const onDelete = async(reserva) => {
-        reservasServices.deleteReserva
+        await reservasServices.deleteReserva(reserva);
+        loadData();
     }
 
     const onSubmit = async (data) => {
-        reservasServices.saveReserva(data)
-        loadData()
-        setAction('C')
+        if(reservaSelecc == null){
+            reservasServices.saveReserva(data)
+            loadData()
+            setAction('C')
+        }else{
+            const reservaModificada = {...reservaSelecc, ...data}
+            reservasServices.update(reservaModificada);
+            loadData;
+            setAction('C')
+        }
+        
     }
 
+    //setea los valores
+    useEffect(() => {
+        if (reservaSelecc) {
+          setValue('Dni', reservaSelecc.Dni);
+          setValue('FechaIngreso', reservaSelecc.FechaIngreso);
+          setValue('FechaSalida', reservaSelecc.FechaSalida);
+          setValue('TipoEstadia', reservaSelecc.TipoEstadia);
+          setValue('Huespedes', reservaSelecc.Huespedes);
+        }
+      }, [reservaSelecc, setValue]);
 
 
     //CONSEGUIR LOS REGISTROS
@@ -45,13 +68,15 @@ export default function Registro() {
         setAction('R')
     }
 
+    
+
     return (
         <div className='container_app'>
             {
                 action === 'R' && (
                     //handleSubmit de react-hook-form para recopilar y validar los datos del formulario antes de pasarlos a onSubmit.
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <h5>Registro de Reserva de estadía</h5>
+                        <h5>{reservaSelecc ? 'Actualizar' : 'Registro de Reserva de estadía'}</h5>
                         <div className="form-group">
                             <label htmlFor="Dni">DNI reserva:</label>
                             <input type="text" className="form-control" id="Dni"  {...register("Dni", { required: 'Este campo es requerido' })} />
@@ -82,7 +107,7 @@ export default function Registro() {
                             {errors.huespedes && <span className='error'>{errors.huespedes.message}</span>}
                         </div>
                         <div className="form-group text-center mt-3">
-                            <button type="submit" className="btn btn-primary mx-1">Registrar</button>
+                        <button type="submit" className="btn btn-primary mt-3 me-2">{reservaSelecc ? 'Actualizar' : 'Registrar'}</button>
                             <button type="reset" className="btn btn-secondary mx-1">Limpiar</button>
                         </div>
 
@@ -92,7 +117,7 @@ export default function Registro() {
             {
                 action !== 'R' && (
                     //props: son los valores o funciones que se pasan desde un componente padre a un componente hijo para que el componente hijo las utilice.
-                    <Consulta reservas={reservas} onVolver={onVolver}></Consulta>
+                    <Consulta reservas={reservas} onVolver={onVolver} onDelete={onDelete} onModificar={onModificar}></Consulta>
                 )
             }
         </div >
